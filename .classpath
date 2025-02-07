@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="JavaApplication1/src"/>
+	<classpathentry kind="src" path="Practica1PE/src"/>
+	<classpathentry kind="lib" path="Practica1PE/dist/lib/jmathplot.jar"/>
+	<classpathentry kind="lib" path="Practica1PE/dist/Practica1PE.jar"/>
+	<classpathentry kind="lib" path="Practica1PE/lib/jmathplot.jar"/>
+	<classpathentry kind="output" path="Practica1PE/build/classes"/>
+</classpath>
