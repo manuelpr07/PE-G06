@@ -5,12 +5,22 @@ import java.util.stream.IntStream;
 public class AlgoritmoGenetico {
     private Poblacion poblacion;
     private double probMutacion;
+    private double probCruce;
+    private double porcentajeElitismo;
+    private String metodoSeleccion;
+    private String metodoCruce;
     private int opcionFuncion;
     private int dimension;
 
-    public AlgoritmoGenetico(int tamPoblacion, int numVariables, double[] min, double[] max, double probMutacion, int opcionFuncion) {
+    public AlgoritmoGenetico(int tamPoblacion, int numVariables, double[] min, double[] max,
+                              double probMutacion, double probCruce, double porcentajeElitismo,
+                              String metodoSeleccion, String metodoCruce, int opcionFuncion) {
         this.poblacion = new Poblacion(tamPoblacion, numVariables, min, max);
         this.probMutacion = probMutacion;
+        this.probCruce = probCruce;
+        this.porcentajeElitismo = porcentajeElitismo;
+        this.metodoSeleccion = metodoSeleccion;
+        this.metodoCruce = metodoCruce;
         this.opcionFuncion = opcionFuncion;
         this.dimension = numVariables;
     }
@@ -20,7 +30,7 @@ public class AlgoritmoGenetico {
     }
 
     public Individuo ejecutar() {
-        this.poblacion.evolucionar(probMutacion);
+        this.poblacion.evolucionar(probMutacion, probCruce, porcentajeElitismo, metodoSeleccion, metodoCruce);
         return this.poblacion.getMejor();
     }
 

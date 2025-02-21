@@ -4,7 +4,6 @@ import algoritmo.AlgoritmoGenetico;
 import algoritmo.Individuo;
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import org.math.plot.Plot2DPanel;
 
 public class Main {
@@ -16,12 +15,22 @@ public class Main {
 
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
 
-        // Campos para los parámetros
+        // Campos para los parámetros básicos
         JTextField txtTamPoblacion = new JTextField("100");
         JTextField txtGeneraciones = new JTextField("100");
         JTextField txtPorcentajeMutacion = new JTextField("5");
         JTextField txtDimension = new JTextField("2");
         txtDimension.setEnabled(false); // Deshabilitar por defecto
+
+        // Campos para los nuevos parámetros
+        JTextField txtPorcentajeCruce = new JTextField("60");
+        JTextField txtPorcentajeElitismo = new JTextField("0");
+
+        String[] opcionesSeleccion = {"Torneo", "Ruleta"};
+        JComboBox<String> comboSeleccion = new JComboBox<>(opcionesSeleccion);
+
+        String[] opcionesCruce = {"Monopunto", "Uniforme"};
+        JComboBox<String> comboCruce = new JComboBox<>(opcionesCruce);
 
         JComboBox<String> comboFuncion = new JComboBox<>(new String[]{
                 "1. Función 1: Maximización (2D)",
@@ -42,8 +51,16 @@ public class Main {
         panel.add(txtTamPoblacion);
         panel.add(new JLabel("Número de Generaciones:"));
         panel.add(txtGeneraciones);
-        panel.add(new JLabel("Porcentaje de Mutación:"));
+        panel.add(new JLabel("Porcentaje de Mutación (%):"));
         panel.add(txtPorcentajeMutacion);
+        panel.add(new JLabel("Porcentaje de Cruce (%):"));
+        panel.add(txtPorcentajeCruce);
+        panel.add(new JLabel("Porcentaje de Elitismo (%):"));
+        panel.add(txtPorcentajeElitismo);
+        panel.add(new JLabel("Método de Selección:"));
+        panel.add(comboSeleccion);
+        panel.add(new JLabel("Método de Cruce:"));
+        panel.add(comboCruce);
         panel.add(new JLabel("Dimensión (Solo para Función 4 y 5):"));
         panel.add(txtDimension);
         panel.add(new JLabel("Selecciona la Función a Optimizar:"));
@@ -58,16 +75,22 @@ public class Main {
         // Acción al presionar el botón
         btnEjecutar.addActionListener(e -> {
             try {
-                // Leer parámetros
+                // Leer parámetros básicos
                 int tamPoblacion = Integer.parseInt(txtTamPoblacion.getText());
                 int generaciones = Integer.parseInt(txtGeneraciones.getText());
                 double probMutacion = Integer.parseInt(txtPorcentajeMutacion.getText()) / 100.0;
                 int dimension = Integer.parseInt(txtDimension.getText());
                 int opcionFuncion = comboFuncion.getSelectedIndex() + 1;
 
-                boolean esMinimizacion = opcionFuncion == 2 || opcionFuncion == 3 || opcionFuncion == 4 || opcionFuncion == 5;
+                // Leer nuevos parámetros
+                double probCruce = Integer.parseInt(txtPorcentajeCruce.getText()) / 100.0;
+                double porcentajeElitismo = Integer.parseInt(txtPorcentajeElitismo.getText()) / 100.0;
+                String metodoSeleccion = comboSeleccion.getSelectedItem().toString();
+                String metodoCruce = comboCruce.getSelectedItem().toString();
 
-                // Configurar límites
+                boolean esMinimizacion = (opcionFuncion == 2 || opcionFuncion == 3 || opcionFuncion == 4 || opcionFuncion == 5);
+
+                // Configurar límites según la función seleccionada
                 double[] min, max;
                 if (opcionFuncion == 4 || opcionFuncion == 5) {
                     min = new double[dimension];
@@ -77,17 +100,26 @@ public class Main {
                         max[i] = Math.PI;
                     }
                 } else {
-                    min = opcionFuncion == 1 ? new double[]{-3.0, 4.1} : new double[]{-10.0, -6.5};
-                    max = opcionFuncion == 1 ? new double[]{12.1, 5.8} : new double[]{0.0, 0.0};
+                    if (opcionFuncion == 1) {
+                        min = new double[]{-3.0, 4.1};
+                        max = new double[]{12.1, 5.8};
+                    } else {
+                        min = new double[]{-10.0, -6.5};
+                        max = new double[]{0.0, 0.0};
+                    }
                 }
 
-                // Crear algoritmo genético
+                // Crear algoritmo genético con todos los parámetros
                 AlgoritmoGenetico ag = new AlgoritmoGenetico(
                         tamPoblacion,
                         min.length,
                         min,
                         max,
                         probMutacion,
+                        probCruce,
+                        porcentajeElitismo,
+                        metodoSeleccion,
+                        metodoCruce,
                         opcionFuncion
                 );
                 if (opcionFuncion == 4 || opcionFuncion == 5) {
@@ -116,9 +148,6 @@ public class Main {
                     mejoresAbsolutos[gen] = mejorAbsoluto;
                 }
 
-                // Mostrar resultados
-               
-                
                 // Graficar evolución
                 graficarEvolucion(mejoresAbsolutos, mejoresGeneracion, promediosGeneracion);
 
@@ -136,11 +165,11 @@ public class Main {
             generaciones[i] = i;
         }
 
-        plot.addLinePlot("Mejor Absoluto (Azul)", Color.BLACK, generaciones, mejoresAbsolutos);
+        plot.addLinePlot("Mejor Absoluto (Negro)", Color.BLACK, generaciones, mejoresAbsolutos);
         plot.addLinePlot("Mejor Generación (Rojo)", Color.RED, generaciones, mejoresGeneracion);
         plot.addLinePlot("Aptitud Media (Verde)", Color.GREEN, generaciones, promediosGeneracion);
-
-        JFrame frame = new JFrame("EvoluciónASDWER del Fitness");
+      
+        JFrame frame = new JFrame("Evolución del Fitness");
         frame.setSize(800, 600);
         frame.setContentPane(plot);
         frame.setVisible(true);

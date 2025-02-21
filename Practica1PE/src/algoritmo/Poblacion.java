@@ -1,13 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package algoritmo;
-
-/**
- *
- * @author dorje
- */
 
 import java.util.Arrays;
 import java.util.Random;
@@ -46,6 +37,35 @@ public class Poblacion {
         return mejor;
     }
 
+    // Método de selección por ruleta
+    public Individuo seleccionRuleta() {
+        double totalFitness = 0.0;
+        for (Individuo ind : individuos) {
+            totalFitness += ind.getFitness();
+        }
+        double randFitness = Math.random() * totalFitness;
+        double acum = 0.0;
+        for (Individuo ind : individuos) {
+            acum += ind.getFitness();
+            if (acum >= randFitness) {
+                return ind;
+            }
+        }
+        return individuos[individuos.length - 1];
+    }
+
+    // Selección según el método elegido
+    public Individuo seleccionarPorMetodo(String metodo) {
+        if (metodo.equals("Torneo")) {
+            return seleccionTorneo(3);
+        } else if (metodo.equals("Ruleta")) {
+            return seleccionRuleta();
+        } else {
+            // Por defecto, usa torneo
+            return seleccionTorneo(3);
+        }
+    }
+
     // Método de cruce monopunto
     public Individuo[] cruceMonopunto(Individuo p1, Individuo p2) {
         int tam = p1.cromosoma.length;
@@ -72,6 +92,42 @@ public class Poblacion {
         return new Individuo[]{hijoA, hijoB};
     }
 
+    // Método de cruce uniforme
+    public Individuo[] cruceUniforme(Individuo p1, Individuo p2) {
+        int tam = p1.cromosoma.length;
+        Boolean[] hijo1 = new Boolean[tam];
+        Boolean[] hijo2 = new Boolean[tam];
+
+        for (int i = 0; i < tam; i++) {
+            if (Math.random() < 0.5) {
+                hijo1[i] = p1.cromosoma[i];
+                hijo2[i] = p2.cromosoma[i];
+            } else {
+                hijo1[i] = p2.cromosoma[i];
+                hijo2[i] = p1.cromosoma[i];
+            }
+        }
+
+        Individuo hijoA = new Individuo(p1.min.length, p1.min, p1.max);
+        Individuo hijoB = new Individuo(p2.min.length, p2.min, p2.max);
+        hijoA.cromosoma = hijo1;
+        hijoB.cromosoma = hijo2;
+
+        return new Individuo[]{hijoA, hijoB};
+    }
+
+    // Cruce según el método elegido
+    public Individuo[] cruzar(String metodoCruce, Individuo p1, Individuo p2) {
+        if (metodoCruce.equals("Monopunto")) {
+            return cruceMonopunto(p1, p2);
+        } else if (metodoCruce.equals("Uniforme")) {
+            return cruceUniforme(p1, p2);
+        } else {
+            // Por defecto, usa monopunto
+            return cruceMonopunto(p1, p2);
+        }
+    }
+
     // Método de mutación con probabilidad
     public void mutacion(double probMutacion) {
         for (Individuo ind : individuos) {
@@ -83,37 +139,47 @@ public class Poblacion {
         }
     }
 
-    // Método para evolucionar la población (una generación)
-    public void evolucionar(double probMutacion) {
+    // Método para evolucionar la población (una generación) usando los nuevos parámetros
+    public void evolucionar(double probMutacion, double probCruce, double porcentajeElitismo, String metodoSeleccion, String metodoCruce) {
         Individuo[] nuevaPoblacion = new Individuo[tamPoblacion];
-
-        // Mantener el mejor (elitismo)
-        nuevaPoblacion[0] = getMejor();
-
-        for (int i = 1; i < tamPoblacion; i += 2) {
-            Individuo padre1 = seleccionTorneo(3);
-            Individuo padre2 = seleccionTorneo(3);
-            Individuo[] hijos = cruceMonopunto(padre1, padre2);
-            nuevaPoblacion[i] = hijos[0];
-            if (i + 1 < tamPoblacion) {
-                nuevaPoblacion[i + 1] = hijos[1];
+        // Calcular número de individuos elite a copiar
+        int numElite = (int) (porcentajeElitismo * tamPoblacion);
+        // Ordenar la población de mayor a menor fitness
+        Individuo[] sorted = individuos.clone();
+        Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
+        // Copiar elites
+        for (int i = 0; i < numElite; i++) {
+            nuevaPoblacion[i] = sorted[i];
+        }
+        // Rellenar el resto mediante reproducción
+        int index = numElite;
+        while (index < tamPoblacion) {
+            Individuo padre1 = seleccionarPorMetodo(metodoSeleccion);
+            Individuo padre2 = seleccionarPorMetodo(metodoSeleccion);
+            Individuo[] hijos;
+            if (Math.random() < probCruce) {
+                hijos = cruzar(metodoCruce, padre1, padre2);
+            } else {
+                // Sin cruce: se copian los padres
+                hijos = new Individuo[]{padre1, padre2};
+            }
+            nuevaPoblacion[index] = hijos[0];
+            index++;
+            if (index < tamPoblacion) {
+                nuevaPoblacion[index] = hijos[1];
+                index++;
             }
         }
-
         // Reemplazar la población antigua con la nueva
         this.individuos = nuevaPoblacion;
-
         // Aplicar mutación
         mutacion(probMutacion);
     }
 
     public Individuo[] getIndividuos() {
-    return individuos;
-}
+        return individuos;
+    }
 
-
-
-    
     // Imprimir la población
     public void imprimir() {
         for (Individuo ind : individuos) {
