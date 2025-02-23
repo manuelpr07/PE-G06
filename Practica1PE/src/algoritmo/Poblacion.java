@@ -6,11 +6,14 @@ import java.util.Random;
 public class Poblacion {
     private Individuo[] individuos;
     private int tamPoblacion;
+    private boolean esMaximizacion;
+
     private Random rand = new Random();
 
-    public Poblacion(int tamPoblacion, int numVariables, double[] min, double[] max) {
+    public Poblacion(int tamPoblacion, int numVariables, double[] min, double[] max, boolean esMaximizacion) {
         this.tamPoblacion = tamPoblacion;
         this.individuos = new Individuo[tamPoblacion];
+        this.esMaximizacion = esMaximizacion;
 
         // Inicializa la población con individuos aleatorios
         for (int i = 0; i < tamPoblacion; i++) {
@@ -18,11 +21,17 @@ public class Poblacion {
         }
     }
 
-    // Obtiene el mejor individuo de la población (el de mayor fitness)
+    // Obtiene el mejor individuo de la población
     public Individuo getMejor() {
-        return Arrays.stream(individuos)
-                     .max((i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()))
-                     .orElse(null);
+        if (esMaximizacion) {
+            return Arrays.stream(individuos)
+                         .max((i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()))
+                         .orElse(null);
+        } else {
+            return Arrays.stream(individuos)
+                         .min((i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()))
+                         .orElse(null);
+        }
     }
 
     // Método de selección por torneo
@@ -30,7 +39,7 @@ public class Poblacion {
         Individuo mejor = null;
         for (int i = 0; i < tamTorneo; i++) {
             Individuo candidato = individuos[rand.nextInt(tamPoblacion)];
-            if (mejor == null || candidato.getFitness() > mejor.getFitness()) {
+            if (mejor == null || (esMaximizacion && candidato.getFitness() > mejor.getFitness()) || (!esMaximizacion && candidato.getFitness() < mejor.getFitness())) {
                 mejor = candidato;
             }
         }
@@ -144,9 +153,13 @@ public class Poblacion {
         Individuo[] nuevaPoblacion = new Individuo[tamPoblacion];
         // Calcular número de individuos elite a copiar
         int numElite = (int) (porcentajeElitismo * tamPoblacion);
-        // Ordenar la población de mayor a menor fitness
+        // Ordenar la población según el tipo de optimización
         Individuo[] sorted = individuos.clone();
-        Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
+        if (esMaximizacion) {
+            Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
+        } else {
+            Arrays.sort(sorted, (i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()));
+        }
         // Copiar elites
         for (int i = 0; i < numElite; i++) {
             nuevaPoblacion[i] = sorted[i];

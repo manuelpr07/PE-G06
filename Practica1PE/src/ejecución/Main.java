@@ -120,7 +120,8 @@ public class Main {
                         porcentajeElitismo,
                         metodoSeleccion,
                         metodoCruce,
-                        opcionFuncion
+                        opcionFuncion,
+                        !esMinimizacion // Configurar esMaximizacion
                 );
                 if (opcionFuncion == 4 || opcionFuncion == 5) {
                     ag.setDimension(dimension);
@@ -168,7 +169,7 @@ public class Main {
         plot.addLinePlot("Mejor Absoluto (Negro)", Color.BLACK, generaciones, mejoresAbsolutos);
         plot.addLinePlot("Mejor Generación (Rojo)", Color.RED, generaciones, mejoresGeneracion);
         plot.addLinePlot("Aptitud Media (Verde)", Color.GREEN, generaciones, promediosGeneracion);
-      
+
         JFrame frame = new JFrame("Evolución del Fitness");
         frame.setSize(800, 600);
         frame.setContentPane(plot);
