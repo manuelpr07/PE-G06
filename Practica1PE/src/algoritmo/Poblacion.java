@@ -160,11 +160,11 @@ public class Poblacion {
         } else {
             Arrays.sort(sorted, (i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()));
         }
-        // Copiar los individuos elite sin modificarlos
+        // Copiar elites
         for (int i = 0; i < numElite; i++) {
             nuevaPoblacion[i] = sorted[i];
         }
-        // Rellenar el resto de la población mediante reproducción
+        // Rellenar el resto mediante reproducción
         int index = numElite;
         while (index < tamPoblacion) {
             Individuo padre1 = seleccionarPorMetodo(metodoSeleccion);
@@ -185,17 +185,9 @@ public class Poblacion {
         }
         // Reemplazar la población antigua con la nueva
         this.individuos = nuevaPoblacion;
-        // Aplicar mutación únicamente a los individuos no elite
-        for (int i = numElite; i < tamPoblacion; i++) {
-            Individuo ind = individuos[i];
-            for (int j = 0; j < ind.cromosoma.length; j++) {
-                if (rand.nextDouble() < probMutacion) {
-                    ind.cromosoma[j] = !ind.cromosoma[j]; // Invierte el bit
-                }
-            }
-        }
+        // Aplicar mutación
+        mutacion(probMutacion);
     }
-
 
     public Individuo[] getIndividuos() {
         return individuos;
