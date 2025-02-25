@@ -149,45 +149,52 @@ public class Poblacion {
     }
 
     // Método para evolucionar la población (una generación) usando los nuevos parámetros
-    public void evolucionar(double probMutacion, double probCruce, double porcentajeElitismo, String metodoSeleccion, String metodoCruce) {
-        Individuo[] nuevaPoblacion = new Individuo[tamPoblacion];
-        // Calcular número de individuos elite a copiar
-        int numElite = (int) (porcentajeElitismo * tamPoblacion);
-        // Ordenar la población según el tipo de optimización
-        Individuo[] sorted = individuos.clone();
-        if (esMaximizacion) {
-            Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
-        } else {
-            Arrays.sort(sorted, (i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()));
-        }
-        // Copiar elites
-        for (int i = 0; i < numElite; i++) {
-            nuevaPoblacion[i] = sorted[i];
-        }
-        // Rellenar el resto mediante reproducción
-        int index = numElite;
-        while (index < tamPoblacion) {
-            Individuo padre1 = seleccionarPorMetodo(metodoSeleccion);
-            Individuo padre2 = seleccionarPorMetodo(metodoSeleccion);
-            Individuo[] hijos;
-            if (Math.random() < probCruce) {
-                hijos = cruzar(metodoCruce, padre1, padre2);
-            } else {
-                // Sin cruce: se copian los padres
-                hijos = new Individuo[]{padre1, padre2};
-            }
-            nuevaPoblacion[index] = hijos[0];
-            index++;
-            if (index < tamPoblacion) {
-                nuevaPoblacion[index] = hijos[1];
-                index++;
-            }
-        }
-        // Reemplazar la población antigua con la nueva
-        this.individuos = nuevaPoblacion;
-        // Aplicar mutación
-        mutacion(probMutacion);
+   public void evolucionar(double probMutacion, double probCruce, double porcentajeElitismo, String metodoSeleccion, String metodoCruce) {
+    Individuo[] nuevaPoblacion = new Individuo[tamPoblacion];
+    // Calcular número de individuos elite a copiar
+    int numElite = (int) (porcentajeElitismo * tamPoblacion);
+    // Ordenar la población según el tipo de optimización
+    Individuo[] sorted = individuos.clone();
+    if (esMaximizacion) {
+        Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
+    } else {
+        Arrays.sort(sorted, (i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()));
     }
+    // Copiar los individuos elite sin alterarlos
+    for (int i = 0; i < numElite; i++) {
+        nuevaPoblacion[i] = sorted[i];
+    }
+    // Rellenar el resto de la población mediante reproducción
+    int index = numElite;
+    while (index < tamPoblacion) {
+        Individuo padre1 = seleccionarPorMetodo(metodoSeleccion);
+        Individuo padre2 = seleccionarPorMetodo(metodoSeleccion);
+        Individuo[] hijos;
+        if (Math.random() < probCruce) {
+            hijos = cruzar(metodoCruce, padre1, padre2);
+        } else {
+            // Si no se cruza, se copian los padres directamente
+            hijos = new Individuo[]{padre1, padre2};
+        }
+        nuevaPoblacion[index] = hijos[0];
+        index++;
+        if (index < tamPoblacion) {
+            nuevaPoblacion[index] = hijos[1];
+            index++;
+        }
+    }
+    // Aplicar mutación solo a los individuos que NO son elite
+    for (int i = numElite; i < nuevaPoblacion.length; i++) {
+        for (int j = 0; j < nuevaPoblacion[i].cromosoma.length; j++) {
+            if (Math.random() < probMutacion) {
+                nuevaPoblacion[i].cromosoma[j] = !nuevaPoblacion[i].cromosoma[j];
+            }
+        }
+    }
+    // Reemplazar la población antigua con la nueva
+    this.individuos = nuevaPoblacion;
+}
+
 
     public Individuo[] getIndividuos() {
         return individuos;
