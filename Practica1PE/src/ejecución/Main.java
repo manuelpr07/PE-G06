@@ -22,7 +22,7 @@ public class Main {
         
         // Panel con layout en grid para organizar la interfaz
         JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-        panel.setBackground(Color.cyan);
+     
     
         // Campos de entrada para los parámetros básicos
         JTextField txtTamPoblacion = new JTextField("100");

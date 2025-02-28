@@ -331,40 +331,58 @@ public class Poblacion {
      * Evoluciona la población una generación aplicando selección, cruce y mutación.
      */
     public void evolucionar(double probMutacion, double probCruce, double porcentajeElitismo, 
-                            String metodoSeleccion, String metodoCruce, boolean usarMutacionReales) {
-        Individuo[] nuevaPoblacion = new Individuo[tamPoblacion];
-        Individuo[] sorted = individuos.clone();
-        if (esMaximizacion) {
-            Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
-        } else {
-            Arrays.sort(sorted, (i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()));
-        }
-        int numElite = (int) Math.round(porcentajeElitismo * tamPoblacion);
-        if (numElite > tamPoblacion) { numElite = tamPoblacion; }
-        for (int i = 0; i < numElite; i++) {
-            nuevaPoblacion[i] = sorted[i];
-        }
-        int index = numElite;
-        while (index < tamPoblacion) {
-            Individuo padre1 = seleccionarPorMetodo(metodoSeleccion);
-            Individuo padre2 = seleccionarPorMetodo(metodoSeleccion);
-            Individuo[] hijos;
-            if (Math.random() < probCruce) {
-                hijos = cruzar(metodoCruce, padre1, padre2);
-            } else {
-                hijos = new Individuo[]{padre1, padre2};
-            }
-            nuevaPoblacion[index] = hijos[0];
-            index++;
-            if (index < tamPoblacion) {
-                nuevaPoblacion[index] = hijos[1];
-                index++;
-            }
-        }
-        // Aplicar mutación a los no élites
-        mutacion(probMutacion, usarMutacionReales);
-        this.individuos = nuevaPoblacion;
+                        String metodoSeleccion, String metodoCruce, boolean usarMutacionReales) {
+    Individuo[] nuevaPoblacion = new Individuo[tamPoblacion];
+    Individuo[] sorted = individuos.clone();
+    if (esMaximizacion) {
+        Arrays.sort(sorted, (i1, i2) -> Double.compare(i2.getFitness(), i1.getFitness()));
+    } else {
+        Arrays.sort(sorted, (i1, i2) -> Double.compare(i1.getFitness(), i2.getFitness()));
     }
+    int numElite = (int) Math.round(porcentajeElitismo * tamPoblacion);
+    if (numElite > tamPoblacion) { 
+        numElite = tamPoblacion; 
+    }
+    // Se copian los individuos élite sin modificar
+    for (int i = 0; i < numElite; i++) {
+        nuevaPoblacion[i] = sorted[i];
+    }
+    int index = numElite;
+    // Rellenar el resto de la población mediante selección y cruce
+    while (index < tamPoblacion) {
+        Individuo padre1 = seleccionarPorMetodo(metodoSeleccion);
+        Individuo padre2 = seleccionarPorMetodo(metodoSeleccion);
+        Individuo[] hijos;
+        if (Math.random() < probCruce) {
+            hijos = cruzar(metodoCruce, padre1, padre2);
+        } else {
+            hijos = new Individuo[]{padre1, padre2};
+        }
+        nuevaPoblacion[index] = hijos[0];
+        index++;
+        if (index < tamPoblacion) {
+            nuevaPoblacion[index] = hijos[1];
+            index++;
+        }
+    }
+    // Aplicar mutación a los individuos no élites de la nueva población
+    for (int i = numElite; i < tamPoblacion; i++) {
+        Individuo ind = nuevaPoblacion[i];
+        if (AlgoritmoGenetico.opcionFuncionGlobal == 5) {
+            if (usarMutacionReales) {
+                mutacionReal(ind, probMutacion);
+            }
+        } else {
+            for (int j = 0; j < ind.cromosoma.length; j++) {
+                if (rand.nextDouble() < probMutacion) {
+                    ind.cromosoma[j] = !ind.cromosoma[j];
+                }
+            }
+        }
+    }
+    // Finalmente, se asigna la nueva población mutada
+    this.individuos = nuevaPoblacion;
+}
 
     public Individuo[] getIndividuos() {
         return individuos;
