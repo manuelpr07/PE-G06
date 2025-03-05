@@ -319,7 +319,7 @@ public class Poblacion {
     public void mutacionReal(Individuo ind, double probMutacion) {
         for (int i = 0; i < ind.genes.length; i++) {
             if (rand.nextDouble() < probMutacion) {
-                double perturbacion = (rand.nextDouble() - 0.5) * 0.2; // Puedes ajustar la magnitud
+                double perturbacion = (rand.nextDouble() - 0.5) * 0.5; // Puedes ajustar la magnitud
                 double nuevo = ind.genes[i] + perturbacion;
                 nuevo = Math.max(ind.min[i], Math.min(nuevo, ind.max[i]));
                 ind.genes[i] = nuevo;

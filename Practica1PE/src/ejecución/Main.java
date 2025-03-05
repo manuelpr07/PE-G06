@@ -38,7 +38,6 @@ public class Main {
     private JCheckBox chkMutacionReales = new JCheckBox("Mutación sobre reales", false);
 
     public static void main(String[] args) {
-        // Aplicamos Nimbus Look and Feel para un estilo moderno
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch(Exception e) {
@@ -53,12 +52,10 @@ public class Main {
         frame.setSize(750, 800);
         frame.setLocationRelativeTo(null);
 
-        // Panel principal con fondo degradado
         GradientPanel mainPanel = new GradientPanel();
         mainPanel.setLayout(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Panel de título
         JLabel titleLabel = new JLabel("Configuración del Algoritmo Genético", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 32));
         titleLabel.setForeground(Color.WHITE);
@@ -67,7 +64,7 @@ public class Main {
         titlePanel.add(titleLabel);
         mainPanel.add(titlePanel, BorderLayout.NORTH);
 
-        // Panel de formulario con fondo semi-transparente y borde redondeado
+       
         JPanel formPanel = createFormPanel();
         formPanel.setOpaque(false);
         formPanel.setBorder(new CompoundBorder(

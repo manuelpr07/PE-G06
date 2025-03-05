@@ -123,7 +123,7 @@ public class Individuo {
                 m = 10;
                 for (int i = 0; i < fenotipos.length; i++) {
                     int j = i + 1;
-                    fitness -= Math.sin(fenotipos[i]) * Math.pow(Math.sin((j * Math.pow(fenotipos[i], 2)) / Math.PI), 2 * m);
+                    fitness -= Math.sin(fenotipos[i]) * Math.pow(Math.sin((j * Math.pow(fenotipos[i], 2)) / Math.PI), 2* m);
                 }
                 break;
             case 5:
