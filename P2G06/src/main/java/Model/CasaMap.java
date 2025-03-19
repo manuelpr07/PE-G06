@@ -72,6 +72,7 @@ public class CasaMap {
         for (int j = 1; j <= 4; j++) {
             grid[8][j] = '■';
         }
+
         // Obstáculos en esquina superior derecha: (0,13) y (1,13)
         grid[0][13] = '■';
         grid[1][13] = '■';
@@ -79,6 +80,9 @@ public class CasaMap {
         for (int j = 8; j <= 11; j++) {
             grid[3][j] = '■';
         }
+        
+        // Obstáculo adicional: se añade un obstáculo representado por 'X'
+        grid[6][6] = 'X';
     }
     
     public void printMap() {

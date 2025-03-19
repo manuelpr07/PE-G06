@@ -41,9 +41,9 @@ public class P2G06 {
         // Panel de configuración con selección de métodos
         JPanel panelConfig = new JPanel(new FlowLayout());
         JTextField txtPoblacion = new JTextField("50", 5);
-        JTextField txtGeneraciones = new JTextField("100", 5);
-        JTextField txtProbCruce = new JTextField("0.7", 5);
-        JTextField txtProbMutacion = new JTextField("0.1", 5);
+        JTextField txtGeneraciones = new JTextField("300", 5);
+        JTextField txtProbCruce = new JTextField("0.8", 5);
+        JTextField txtProbMutacion = new JTextField("0.3", 5);
         JComboBox<String> comboFitness = new JComboBox<>(new String[]{
             "Distancia Total", "Distancia + Suavidad"
         });
