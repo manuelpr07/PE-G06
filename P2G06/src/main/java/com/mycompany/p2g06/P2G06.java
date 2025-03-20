@@ -102,6 +102,20 @@ public class P2G06 {
             info.append("\nFitness: ").append(mejor.getFitness());
             JOptionPane.showMessageDialog(frame, info.toString(), "Resultados", JOptionPane.INFORMATION_MESSAGE);
             
+            // Mostrar la gráfica de evolución del fitness
+            FitnessChartPanel chartPanel = new FitnessChartPanel(
+                ag.getBestFitnessPerGeneration(),
+                ag.getAverageFitnessPerGeneration(),
+                ag.getAbsoluteBestFitness()
+            );
+            JFrame chartFrame = new JFrame("Evolución del Fitness");
+            chartFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            chartFrame.add(chartPanel);
+            chartFrame.setSize(800, 600);
+            chartFrame.setLocationRelativeTo(null);
+            chartFrame.setVisible(true);
+            
+            // Calcular y animar la ruta
             List<Point> fullPath = new ArrayList<>();
             AStar astar = new AStar(map.getGrid());
             

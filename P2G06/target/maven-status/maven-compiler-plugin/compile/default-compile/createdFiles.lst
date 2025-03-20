@@ -6,4 +6,5 @@ Algoritmo\AlgorimoGeneticoRuta.class
 Algoritmo\AStar$Node.class
 Model\CasaMap.class
 Algoritmo\AStar.class
+com\mycompany\p2g06\FitnessChartPanel.class
 com\mycompany\p2g06\P2G06.class

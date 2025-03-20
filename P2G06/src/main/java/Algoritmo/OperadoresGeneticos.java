@@ -21,7 +21,7 @@ public class OperadoresGeneticos {
                 return crossoverCO(padre1, padre2);
             case 5: // ERX: Edge Recombination Crossover
                 return crossoverERX(padre1, padre2);
-            case 6: // Otra variante custom (se puede ajustar)
+            case 6: 
                 return crossoverCustom(padre1, padre2);
             default:
                 return crossoverPMX(padre1, padre2);

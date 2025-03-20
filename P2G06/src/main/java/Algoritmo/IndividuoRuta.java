@@ -143,4 +143,16 @@ public class IndividuoRuta {
     public String toString() {
         return Arrays.toString(ruta) + " Fitness: " + fitness;
     }
+    
+    // Método copy() para clonar el individuo (usado en elitismo)
+    public IndividuoRuta copy() {
+        IndividuoRuta copia = new IndividuoRuta();
+        int[] original = this.getRuta();
+        int[] newRoute = new int[original.length];
+        System.arraycopy(original, 0, newRoute, 0, original.length);
+        // Copiamos el arreglo al nuevo individuo
+        System.arraycopy(newRoute, 0, copia.getRuta(), 0, original.length);
+        copia.fitness = this.fitness;
+        return copia;
+    }
 }
